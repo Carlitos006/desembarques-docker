@@ -23,7 +23,7 @@ $powerShellExecutable = Join-Path $env:SystemRoot "System32\WindowsPowerShell\v1
 if (-not (Test-Path -LiteralPath $powerShellExecutable -PathType Leaf)) {
     throw "No se encontro Windows PowerShell en $powerShellExecutable."
 }
-$arguments = '-NoProfile -ExecutionPolicy Bypass -File "{0}"' -f $backupScript
+$arguments = '-NoProfile -ExecutionPolicy Bypass -File "{0}" -SyncGitHub' -f $backupScript
 
 $action = New-ScheduledTaskAction `
     -Execute $powerShellExecutable `
@@ -51,7 +51,7 @@ Register-ScheduledTask `
     -Trigger $trigger `
     -Settings $settings `
     -Principal $principal `
-    -Description "Respalda diariamente la base MySQL, los archivos operativos y el codigo de Desembarques en OneDrive empresarial." `
+    -Description "Respalda diariamente la base MySQL y los archivos en OneDrive, y sincroniza el codigo permitido con GitHub." `
     -Force | Out-Null
 
 Write-Host "Tarea instalada: $TaskName"

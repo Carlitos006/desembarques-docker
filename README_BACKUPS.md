@@ -15,6 +15,13 @@ OneDrive empresarial. Cada respaldo contiene:
 El archivo `.env` se excluye deliberadamente. Sus credenciales deben guardarse
 en un gestor empresarial de contraseñas o en un archivo cifrado independiente.
 
+La tarea diaria tambien sincroniza con la rama `main` del repositorio privado
+de GitHub despues de terminar el respaldo de OneDrive. Antes de confirmar los
+cambios bloquea `.env`, respaldos, archivos operativos, llaves privadas,
+archivos grandes y patrones comunes de secretos. Si GitHub contiene cambios
+que requieren integracion manual, conserva el trabajo local y registra el
+error sin sobrescribir el repositorio remoto.
+
 ## Ejecutar manualmente
 
 Desde PowerShell:
@@ -22,6 +29,12 @@ Desde PowerShell:
 ```powershell
 Set-Location "C:\Dev\desembarques"
 .\scripts\backup-onedrive.ps1
+```
+
+Para ejecutar manualmente el respaldo y despues sincronizar GitHub:
+
+```powershell
+.\scripts\backup-onedrive.ps1 -SyncGitHub
 ```
 
 ## Instalar la tarea diaria
@@ -49,3 +62,7 @@ El resultado de la última ejecución de cada computadora queda registrado en
 `OneDrive\DockerBackups\desembarques`. Las carpetas fechadas también incluyen
 el nombre del equipo para evitar conflictos si las dos computadoras respaldan
 al mismo tiempo.
+
+La sincronización con GitHub mantiene sus propios archivos
+`last-github-sync-NOMBRE-DE-EQUIPO.json` y
+`github-sync-NOMBRE-DE-EQUIPO.log` en la misma carpeta de respaldos.

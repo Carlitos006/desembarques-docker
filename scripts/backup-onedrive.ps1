@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [string]$ProjectPath = "",
-    [string]$BackupRoot = ""
+    [string]$BackupRoot = "",
+    [switch]$SyncGitHub
 )
 
 Set-StrictMode -Version Latest
@@ -243,4 +244,18 @@ catch {
     } | ConvertTo-Json | Set-Content -LiteralPath $statusFile -Encoding utf8
 
     throw
+}
+
+if ($SyncGitHub) {
+    try {
+        $syncScript = Join-Path $PSScriptRoot "sync-github.ps1"
+        if (-not (Test-Path -LiteralPath $syncScript -PathType Leaf)) {
+            throw "No se encontro $syncScript."
+        }
+
+        & $syncScript -ProjectPath $ProjectPath
+    }
+    catch {
+        Write-Warning "El respaldo de OneDrive termino correctamente, pero la sincronizacion con GitHub fallo: $($_.Exception.Message)"
+    }
 }
