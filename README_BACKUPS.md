@@ -1,6 +1,6 @@
 # Respaldos locales de Desembarques
 
-El proyecto incluye una automatización para crear respaldos fechados dentro de
+El proyecto incluye una automatización para crear respaldos rotativos dentro de
 OneDrive empresarial. Cada respaldo contiene:
 
 - `database.sql`: estructura y datos actuales de MySQL.
@@ -57,11 +57,14 @@ iniciada. Docker Desktop y el servicio `db` también deben estar activos. Si el
 equipo estaba apagado a la hora programada, Windows intentará ejecutar la tarea
 al volver a iniciar sesión.
 
+Por cada computadora se conservan solamente dos carpetas: `latest-EQUIPO` y
+`previous-EQUIPO`. El respaldo nuevo se construye y valida antes de rotarlas,
+por lo que el almacenamiento no crece diariamente y siempre existe una copia
+anterior para recuperación.
+
 El resultado de la última ejecución de cada computadora queda registrado en
 `last-backup-status-NOMBRE-DE-EQUIPO.json`, dentro de
-`OneDrive\DockerBackups\desembarques`. Las carpetas fechadas también incluyen
-el nombre del equipo para evitar conflictos si las dos computadoras respaldan
-al mismo tiempo.
+`OneDrive\DockerBackups\desembarques`.
 
 La sincronización con GitHub mantiene sus propios archivos
 `last-github-sync-NOMBRE-DE-EQUIPO.json` y

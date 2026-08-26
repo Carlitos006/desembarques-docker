@@ -110,16 +110,16 @@ $BackupRoot = (Resolve-Path -LiteralPath $BackupRoot).Path
 
 $timestamp = Get-Date -Format "yyyy-MM-dd_HHmmss"
 $safeComputerName = $env:COMPUTERNAME -replace '[^A-Za-z0-9._-]', '-'
-$backupName = "${timestamp}_${safeComputerName}"
-$stagingFolder = Join-Path $BackupRoot ".in-progress-$backupName"
-$finalFolder = Join-Path $BackupRoot $backupName
+$stagingFolder = Join-Path $BackupRoot ".in-progress-$safeComputerName"
+$latestFolder = Join-Path $BackupRoot "latest-$safeComputerName"
+$previousFolder = Join-Path $BackupRoot "previous-$safeComputerName"
 $statusFile = Join-Path $BackupRoot "last-backup-status-$safeComputerName.json"
 $script:LogFile = $null
 $containerDump = "/tmp/desembarques-$timestamp.sql"
 $containerDumpCreated = $false
 
-if (Test-Path -LiteralPath $finalFolder) {
-    throw "Ya existe el destino $finalFolder."
+if (Test-Path -LiteralPath $stagingFolder) {
+    Remove-Item -LiteralPath $stagingFolder -Recurse -Force
 }
 
 New-Item -ItemType Directory -Path $stagingFolder -Force | Out-Null
@@ -202,6 +202,7 @@ try {
             git_commit           = $gitCommit
             git_has_local_changes = (@($gitStatus | Where-Object { $_ -notmatch '^##' }).Count -gt 0)
             env_included         = $false
+            rotation_policy      = "latest_previous"
         }
         $manifest | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $stagingFolder "manifest.json") -Encoding utf8
 
@@ -220,15 +221,21 @@ try {
     }
 
     Write-BackupLog "Respaldo completado correctamente."
-    Move-Item -LiteralPath $stagingFolder -Destination $finalFolder
+    if (Test-Path -LiteralPath $previousFolder) {
+        Remove-Item -LiteralPath $previousFolder -Recurse -Force
+    }
+    if (Test-Path -LiteralPath $latestFolder) {
+        Move-Item -LiteralPath $latestFolder -Destination $previousFolder
+    }
+    Move-Item -LiteralPath $stagingFolder -Destination $latestFolder
 
     [ordered]@{
         status       = "success"
         completed_at = (Get-Date).ToString("o")
-        backup_path  = $finalFolder
+        backup_path  = $latestFolder
     } | ConvertTo-Json | Set-Content -LiteralPath $statusFile -Encoding utf8
 
-    Write-Host "Respaldo listo: $finalFolder"
+    Write-Host "Respaldo listo: $latestFolder"
 }
 catch {
     $message = $_.Exception.Message
