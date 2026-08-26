@@ -1,0 +1,162 @@
+.aviso-import-shell { max-width: 1320px; }
+.aviso-import-hero {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 1.25rem;
+  background: var(--bs-body-bg);
+  box-shadow: 0 .5rem 1.5rem rgba(15, 23, 42, .07);
+}
+.aviso-import-dropzone {
+  border: 2px dashed color-mix(in srgb, var(--bs-primary) 35%, var(--bs-border-color));
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--bs-primary) 3%, var(--bs-body-bg));
+  transition: .18s ease;
+}
+.aviso-import-dropzone.is-dragging {
+  border-color: var(--bs-primary);
+  background: color-mix(in srgb, var(--bs-primary) 8%, var(--bs-body-bg));
+  transform: translateY(-1px);
+}
+.aviso-import-stat {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 1rem;
+  padding: 1rem;
+  min-height: 100%;
+  background: var(--bs-body-bg);
+}
+.aviso-import-stat strong { display: block; font-size: 1.55rem; line-height: 1; margin-bottom: .35rem; }
+.aviso-import-table { min-width: 1050px; }
+.aviso-import-row-detail {
+  border-left: 3px solid var(--bs-border-color);
+  padding-left: 1rem;
+}
+.aviso-import-kv { display: grid; grid-template-columns: minmax(140px, 190px) 1fr; gap: .4rem .9rem; }
+.aviso-import-kv dt { color: var(--bs-secondary-color); font-weight: 600; }
+.aviso-import-kv dd { margin: 0; overflow-wrap: anywhere; }
+.aviso-import-badge-ready { background: rgba(25,135,84,.14); color: #146c43; }
+.aviso-import-badge-review { background: rgba(255,193,7,.2); color: #8a6200; }
+.aviso-import-badge-duplicate { background: rgba(220,53,69,.14); color: #b02a37; }
+.aviso-import-badge-source { background: rgba(13,110,253,.12); color: #0a58ca; }
+[data-bs-theme="dark"] .aviso-import-badge-ready { color: #75d6a4; }
+[data-bs-theme="dark"] .aviso-import-badge-review { color: #ffd76a; }
+[data-bs-theme="dark"] .aviso-import-badge-duplicate { color: #ff8d99; }
+[data-bs-theme="dark"] .aviso-import-badge-source { color: #86b7fe; }
+.aviso-import-file-list { max-height: 180px; overflow: auto; }
+.aviso-import-callout {
+  border-radius: 1rem;
+  border: 1px solid var(--bs-border-color);
+  background: color-mix(in srgb, var(--bs-info) 7%, var(--bs-body-bg));
+}
+@media (max-width: 767.98px) {
+  .aviso-import-kv { grid-template-columns: 1fr; gap: .15rem; }
+  .aviso-import-kv dd { margin-bottom: .65rem; }
+}
+
+/* Phase 5E3 · editable review + atomic commit */
+.aviso-import-batchbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .8rem 1.25rem;
+  align-items: center;
+  justify-content: space-between;
+  padding: .9rem 1rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--bs-success) 4%, var(--bs-body-bg));
+}
+.aviso-import-badge-imported { background: rgba(25,135,84,.2); color: #0f5132; }
+.aviso-import-badge-muted { background: rgba(108,117,125,.16); color: #495057; }
+[data-bs-theme="dark"] .aviso-import-badge-imported { color: #8ee1b4; }
+[data-bs-theme="dark"] .aviso-import-badge-muted { color: #c7ccd1; }
+.aviso-review-editor {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 1rem;
+  padding: 1rem;
+  background: color-mix(in srgb, var(--bs-secondary-bg) 48%, var(--bs-body-bg));
+}
+.aviso-review-section {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+.aviso-review-section:first-child { padding-top: 0; }
+.aviso-review-section:last-of-type { border-bottom: 0; }
+.aviso-review-array-row {
+  display: flex;
+  gap: .65rem;
+  padding: .75rem;
+  margin-bottom: .65rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .75rem;
+  background: var(--bs-body-bg);
+}
+.aviso-review-item {
+  padding: .85rem;
+  margin-bottom: .75rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .8rem;
+  background: var(--bs-body-bg);
+}
+.aviso-review-errors ul { padding-left: 1.1rem; }
+.aviso-commit-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .75rem;
+}
+.aviso-commit-summary-grid > div {
+  padding: .8rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .75rem;
+  background: var(--bs-body-bg);
+}
+.aviso-commit-summary-grid span {
+  display: block;
+  color: var(--bs-secondary-color);
+  font-size: .78rem;
+  margin-bottom: .2rem;
+}
+.aviso-commit-summary-grid strong { display: block; }
+.aviso-import-table > tbody > tr > td { vertical-align: top; }
+.aviso-import-table details > summary { cursor: pointer; user-select: none; }
+
+@media (max-width: 767.98px) {
+  .aviso-import-batchbar { align-items: stretch; }
+  .aviso-import-batchbar > div:last-child { width: 100%; justify-content: space-between; }
+  .aviso-review-array-row { flex-direction: column; }
+  .aviso-commit-summary-grid { grid-template-columns: 1fr; }
+}
+
+/* Phase 5E5 · acceptance / integrity validation */
+.aviso-validation-stat {
+  min-height: 100%;
+  padding: .85rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .8rem;
+  background: var(--bs-body-bg);
+}
+.aviso-validation-stat strong {
+  display: block;
+  font-size: 1.35rem;
+  line-height: 1.1;
+  margin-bottom: .25rem;
+}
+.aviso-validation-stat span {
+  display: block;
+  color: var(--bs-secondary-color);
+  font-size: .78rem;
+}
+.aviso-validation-check-list {
+  display: grid;
+  gap: .55rem;
+}
+.aviso-validation-check {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: .7rem;
+  align-items: start;
+  padding: .65rem .75rem;
+  border: 1px solid var(--bs-border-color);
+  border-radius: .7rem;
+  background: var(--bs-body-bg);
+}
+.aviso-validation-check.pass { border-left: 3px solid var(--bs-success); }
+.aviso-validation-check.warn { border-left: 3px solid var(--bs-warning); }
+.aviso-validation-check.fail { border-left: 3px solid var(--bs-danger); }

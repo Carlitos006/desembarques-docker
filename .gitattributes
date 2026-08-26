@@ -1,0 +1,29 @@
+* text=auto
+
+# Linux/Docker runtime files must keep LF endings on every workstation.
+*.sh text eol=lf
+Dockerfile text eol=lf
+*.php text eol=lf
+*.js text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sql text eol=lf
+*.md text eol=lf
+
+# Native Windows automation.
+*.ps1 text eol=crlf
+
+# Binary artifacts.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.svg text eol=lf
+*.pdf binary
+*.zip binary
+*.doc binary
+*.docx binary
+*.xls binary
+*.xlsx binary

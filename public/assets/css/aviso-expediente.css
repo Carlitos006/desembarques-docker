@@ -1,0 +1,730 @@
+.aviso-expediente-page {
+    max-width: 1440px;
+}
+
+.aviso-expediente-hero {
+    border: 1px solid rgba(13, 110, 253, 0.14);
+    background:
+        radial-gradient(circle at top right, rgba(13, 110, 253, 0.10), transparent 42%),
+        var(--bs-body-bg);
+    border-radius: 1.25rem;
+    padding: clamp(1.4rem, 3vw, 2.4rem);
+    box-shadow: 0 0.8rem 2.2rem rgba(12, 35, 64, 0.08);
+}
+
+.aviso-kicker {
+    font-size: .73rem;
+    letter-spacing: .11em;
+    font-weight: 700;
+    color: var(--bs-primary);
+}
+
+.aviso-metric {
+    height: 100%;
+    min-height: 108px;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+    background: var(--bs-body-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1rem;
+    box-shadow: 0 .4rem 1.4rem rgba(12, 35, 64, 0.05);
+}
+
+.aviso-metric span {
+    display: block;
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    font-weight: 700;
+    line-height: 1;
+    color: var(--bs-emphasis-color);
+}
+
+.aviso-metric small {
+    margin-top: .55rem;
+    color: var(--bs-secondary-color);
+    font-weight: 600;
+}
+
+.aviso-expediente-tabs {
+    gap: .5rem;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: .25rem;
+}
+
+.aviso-expediente-tabs .nav-link {
+    white-space: nowrap;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 999px;
+    color: var(--bs-body-color);
+    background: var(--bs-body-bg);
+}
+
+.aviso-expediente-tabs .nav-link.active {
+    border-color: var(--bs-primary);
+    box-shadow: 0 .35rem 1rem rgba(13, 110, 253, 0.16);
+}
+
+.expediente-card {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1.1rem;
+    overflow: hidden;
+}
+
+.expediente-detail-grid small {
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: .045em;
+    font-size: .68rem;
+    font-weight: 700;
+    color: var(--bs-secondary-color);
+    margin-bottom: .25rem;
+}
+
+.expediente-detail-grid strong,
+.expediente-detail-grid code {
+    display: block;
+    font-size: .96rem;
+    font-weight: 600;
+    color: var(--bs-emphasis-color);
+    word-break: break-word;
+}
+
+.expediente-hash {
+    font-size: .72rem;
+    color: var(--bs-secondary-color) !important;
+    overflow-wrap: anywhere;
+}
+
+.expediente-table thead th {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--bs-secondary-color);
+    border-bottom-width: 1px;
+}
+
+.expediente-table td {
+    vertical-align: middle;
+}
+
+.expediente-empty {
+    padding: 2.4rem 1.25rem;
+    border: 1px dashed var(--bs-border-color);
+    border-radius: 1rem;
+    text-align: center;
+    color: var(--bs-secondary-color);
+    background: rgba(var(--bs-secondary-bg-rgb), .34);
+}
+
+.expediente-photo-card {
+    border-radius: 1rem;
+    overflow: hidden;
+    border-color: var(--bs-border-color);
+}
+
+.expediente-photo-preview {
+    display: block;
+    background: var(--bs-tertiary-bg);
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+}
+
+.expediente-photo-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform .2s ease;
+}
+
+.expediente-photo-preview:hover img {
+    transform: scale(1.025);
+}
+
+.expediente-version {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+    padding: 1rem 1.1rem;
+    background: var(--bs-body-bg);
+}
+
+.expediente-timeline {
+    position: relative;
+    padding-left: 1.2rem;
+}
+
+.expediente-timeline::before {
+    content: '';
+    position: absolute;
+    left: .34rem;
+    top: .35rem;
+    bottom: .35rem;
+    width: 2px;
+    background: var(--bs-border-color);
+}
+
+.expediente-timeline-item {
+    position: relative;
+    padding-left: 1.2rem;
+    padding-bottom: 1.25rem;
+}
+
+.expediente-timeline-item:last-child {
+    padding-bottom: 0;
+}
+
+.expediente-timeline-marker {
+    position: absolute;
+    left: -1.09rem;
+    top: .35rem;
+    width: .72rem;
+    height: .72rem;
+    border-radius: 50%;
+    background: var(--bs-primary);
+    box-shadow: 0 0 0 4px var(--bs-body-bg);
+}
+
+.expediente-timeline-content {
+    border: 1px solid var(--bs-border-color);
+    border-radius: .9rem;
+    padding: .9rem 1rem;
+}
+
+.theme-dark .aviso-expediente-hero,
+.theme-dark .aviso-metric,
+.theme-dark .expediente-version,
+.theme-dark .expediente-timeline-content {
+    box-shadow: none;
+}
+
+@media (max-width: 767.98px) {
+    .aviso-expediente-page {
+        padding-left: .9rem;
+        padding-right: .9rem;
+    }
+
+    .aviso-expediente-hero {
+        border-radius: 1rem;
+    }
+
+    .expediente-card .card-body {
+        padding: 1.2rem !important;
+    }
+}
+
+/* Phase 5B — document management */
+.expediente-documents-table td {
+    min-width: 110px;
+}
+
+.expediente-documents-table td:nth-child(2) {
+    min-width: 260px;
+}
+
+.expediente-document-description {
+    max-width: 560px;
+    white-space: normal;
+}
+
+.expediente-document-replaced {
+    opacity: .72;
+    background: rgba(var(--bs-secondary-bg-rgb), .28);
+}
+
+.expediente-document-replaced:hover {
+    opacity: .9;
+}
+
+.expediente-hash-short {
+    font-size: .68rem;
+    color: var(--bs-secondary-color);
+}
+
+#documentDetailsModal .expediente-hash {
+    white-space: normal;
+    word-break: break-all;
+    background: var(--bs-tertiary-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: .55rem;
+    padding: .65rem .75rem;
+}
+
+#documentUploadModal .modal-content,
+#documentReplaceModal .modal-content,
+#documentDetailsModal .modal-content {
+    border-radius: 1rem;
+    border-color: var(--bs-border-color);
+}
+
+@media (max-width: 991.98px) {
+    .expediente-documents-table {
+        min-width: 1040px;
+    }
+}
+
+/* Phase 5C — notice document lifecycle */
+.aviso-status-card {
+    border-left: .3rem solid var(--bs-primary);
+}
+
+#avisoStatusModal .modal-content {
+    border-radius: 1rem;
+    border-color: var(--bs-border-color);
+}
+
+#avisoStatusModal .alert-info {
+    border-style: dashed;
+}
+
+/* Phase 5E4 — historical notice UX */
+.aviso-origin-card {
+    border-left: .3rem solid var(--bs-primary);
+}
+
+.aviso-origin-card.aviso-origin-historical {
+    border-left-color: var(--bs-dark);
+    background:
+        linear-gradient(135deg, rgba(33, 37, 41, .035), transparent 45%),
+        var(--bs-body-bg);
+}
+
+.aviso-origin-card.aviso-origin-system {
+    border-left-color: var(--bs-primary);
+}
+
+.historical-photo-annex {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: space-between;
+    border: 1px dashed rgba(33, 37, 41, .4);
+    border-radius: 1rem;
+    padding: 1.15rem 1.2rem;
+    background:
+        radial-gradient(circle at top right, rgba(33, 37, 41, .055), transparent 45%),
+        var(--bs-tertiary-bg);
+}
+
+.theme-dark .historical-photo-annex {
+    border-color: rgba(255, 255, 255, .24);
+}
+
+@media (min-width: 992px) {
+    .historical-photo-annex {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+/* Fase 5F — ciclo de mercancía / finalizaciones */
+.merchandise-status-summary .badge {
+    padding: .48rem .65rem;
+}
+
+.merchandise-lifecycle-table {
+    min-width: 1180px;
+}
+
+.merchandise-row-exported {
+    background: rgba(25, 135, 84, .065);
+}
+
+.merchandise-row-partial {
+    background: rgba(255, 193, 7, .075);
+}
+
+.merchandise-finalization-history {
+    border-top: 1px solid var(--bs-border-color);
+    padding-top: 1.5rem;
+}
+
+.merchandise-finalization-event {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+    background: var(--bs-body-bg);
+    padding: 1rem;
+}
+
+.finalization-customs-table {
+    min-width: 980px;
+    font-size: .82rem;
+}
+
+.finalization-customs-table thead th {
+    background: #ff6633;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    font-size: .75rem;
+    letter-spacing: .015em;
+    min-width: 180px;
+}
+
+.finalization-customs-table td {
+    vertical-align: top;
+    white-space: normal;
+    min-width: 180px;
+}
+
+.merchandise-finalization-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    border: 1px solid var(--bs-border-color);
+    border-radius: .75rem;
+    padding: .7rem .8rem;
+    background: rgba(var(--bs-secondary-bg-rgb), .22);
+}
+
+.merchandise-finalize-items-wrap {
+    max-height: 430px;
+    overflow: auto;
+}
+
+.merchandise-finalize-items-table {
+    min-width: 980px;
+}
+
+.merchandise-finalize-items-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--bs-body-bg);
+    box-shadow: 0 1px 0 var(--bs-border-color);
+}
+
+.merchandise-finalize-selected {
+    background: rgba(13, 110, 253, .07);
+}
+
+#merchandiseFinalizeModal .modal-dialog {
+    /* Keep the dialog inside the visible browser viewport. */
+    max-height: calc(100dvh - 2rem);
+}
+
+#merchandiseFinalizeModal .modal-content {
+    border-radius: 1rem;
+    border-color: var(--bs-border-color);
+    max-height: calc(100dvh - 2rem);
+    overflow: hidden;
+}
+
+/*
+ * Bootstrap's scrollable modal expects header/body/footer to participate in
+ * the modal-content flex layout. This modal wraps them in a <form>, so the
+ * form itself must become the flex column. Otherwise the lower customs fields
+ * and footer can fall below the viewport on 768px-high displays.
+ */
+#merchandiseFinalizeModal .modal-content > #merchandise-finalize-form {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    max-height: inherit;
+    overflow: hidden;
+}
+
+#merchandiseFinalizeModal .modal-header,
+#merchandiseFinalizeModal .modal-footer {
+    flex: 0 0 auto;
+    background: var(--bs-body-bg);
+}
+
+#merchandiseFinalizeModal .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+#merchandiseFinalizeModal .modal-footer {
+    position: relative;
+    z-index: 3;
+    box-shadow: 0 -1px 0 var(--bs-border-color);
+}
+
+#merchandiseFinalizeModal textarea {
+    resize: vertical;
+}
+
+@media (max-height: 850px) {
+    #merchandiseFinalizeModal .modal-dialog {
+        align-items: flex-start;
+        margin-bottom: .5rem;
+        margin-top: .5rem;
+        max-height: calc(100dvh - 1rem);
+        min-height: calc(100% - 1rem);
+    }
+
+    #merchandiseFinalizeModal .modal-content {
+        max-height: calc(100dvh - 1rem);
+    }
+
+    #merchandiseFinalizeModal .modal-body {
+        padding-bottom: 1.25rem;
+    }
+
+    /* The merchandise list gets its own compact scroll area on short screens. */
+    #merchandiseFinalizeModal .merchandise-finalize-items-wrap {
+        max-height: min(300px, 38dvh);
+    }
+}
+
+.theme-dark .merchandise-row-exported {
+    background: rgba(25, 135, 84, .13);
+}
+
+.theme-dark .merchandise-row-partial {
+    background: rgba(255, 193, 7, .11);
+}
+
+@media (max-width: 767.98px) {
+    .merchandise-finalization-line {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+/* =========================================================
+   HOTFIX V2 — Finalizar mercancía: Bootstrap-native scroll
+   The form itself is now .modal-content so modal-dialog-scrollable
+   can constrain the body correctly on short displays.
+   ========================================================= */
+#merchandiseFinalizeModal .modal-dialog.modal-dialog-scrollable {
+    height: calc(100dvh - 1rem);
+    max-height: calc(100dvh - 1rem);
+    margin-bottom: .5rem;
+    margin-top: .5rem;
+}
+
+#merchandiseFinalizeModal #merchandise-finalize-form.modal-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+#merchandiseFinalizeModal #merchandise-finalize-form > .modal-header,
+#merchandiseFinalizeModal #merchandise-finalize-form > .modal-footer {
+    flex: 0 0 auto;
+}
+
+#merchandiseFinalizeModal #merchandise-finalize-form > .modal-body {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+#merchandiseFinalizeModal #merchandise-finalize-form > .modal-footer {
+    background: var(--bs-body-bg);
+    box-shadow: 0 -1px 0 var(--bs-border-color);
+    position: relative;
+    z-index: 5;
+}
+
+@media (max-height: 850px) {
+    #merchandiseFinalizeModal .modal-dialog.modal-dialog-scrollable {
+        align-items: stretch;
+        height: calc(100dvh - .5rem);
+        max-height: calc(100dvh - .5rem);
+        margin-bottom: .25rem;
+        margin-top: .25rem;
+        min-height: 0;
+    }
+
+    #merchandiseFinalizeModal .merchandise-finalize-items-wrap {
+        max-height: min(250px, 30dvh);
+    }
+}
+
+/* =========================================================
+   Fase 5F.2 — Finalización V2 por mercancía
+   ========================================================= */
+.merchandise-finalize-details-section {
+    border-top: 1px solid var(--bs-border-color);
+    padding-top: 1.25rem;
+}
+
+.merchandise-finalize-detail-card {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+    background: var(--bs-body-bg);
+    overflow: hidden;
+}
+
+.merchandise-finalize-detail-card > summary {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    list-style: none;
+    padding: .9rem 1rem;
+    user-select: none;
+}
+
+.merchandise-finalize-detail-card > summary::-webkit-details-marker {
+    display: none;
+}
+
+.merchandise-finalize-detail-card > summary::before {
+    color: var(--bs-secondary-color);
+    content: '▸';
+    flex: 0 0 auto;
+    font-size: .95rem;
+    line-height: 1;
+    transition: transform .15s ease;
+}
+
+.merchandise-finalize-detail-card[open] > summary::before {
+    transform: rotate(90deg);
+}
+
+.merchandise-finalize-detail-card[open] > summary {
+    background: rgba(13, 110, 253, .055);
+    border-bottom: 1px solid var(--bs-border-color);
+}
+
+.merchandise-finalize-detail-body {
+    padding: 1rem;
+}
+
+.merchandise-finalize-customs-grid .form-label {
+    font-size: .77rem;
+    line-height: 1.2;
+    min-height: 2.1rem;
+}
+
+.merchandise-finalization-line-card {
+    border: 1px solid var(--bs-border-color);
+    border-radius: .85rem;
+    background: rgba(var(--bs-secondary-bg-rgb), .16);
+    padding: .9rem;
+}
+
+.merchandise-finalization-event-voided {
+    border-color: rgba(220, 53, 69, .35);
+    background: rgba(220, 53, 69, .045);
+}
+
+.merchandise-finalization-event-voided .merchandise-finalization-line-card {
+    opacity: .78;
+}
+
+@media (max-width: 767.98px) {
+    .merchandise-finalize-detail-card > summary {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .merchandise-finalize-detail-card > summary::before {
+        position: absolute;
+    }
+
+    .merchandise-finalize-detail-card > summary > .flex-grow-1 {
+        padding-left: 1.15rem;
+    }
+}
+
+.theme-dark .merchandise-finalize-detail-card[open] > summary {
+    background: rgba(13, 110, 253, .12);
+}
+
+.theme-dark .merchandise-finalization-event-voided {
+    background: rgba(220, 53, 69, .10);
+}
+
+/* =========================================================
+   Fase 7 - Alcances del Aviso
+   ========================================================= */
+.alcance-card {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 1rem;
+    background: var(--bs-body-bg);
+    padding: 1rem;
+}
+
+.alcance-card + .alcance-card {
+    margin-top: .25rem;
+}
+
+.alcance-items-details > summary {
+    color: var(--bs-primary);
+    cursor: pointer;
+    font-size: .86rem;
+    font-weight: 600;
+}
+
+.alcance-version-list {
+    border-top: 1px solid var(--bs-border-color);
+    padding-top: .75rem;
+}
+
+.alcance-version-row {
+    padding: .35rem 0;
+}
+
+.alcance-version-row + .alcance-version-row {
+    border-top: 1px dashed var(--bs-border-color);
+}
+
+.alcance-receipt {
+    border-radius: .8rem;
+    padding: .75rem .9rem;
+}
+
+.alcance-receipt.pending-receipt {
+    background: rgba(255, 193, 7, .08);
+    border: 1px solid rgba(255, 193, 7, .3);
+}
+
+.alcance-receipt.has-receipt {
+    background: rgba(25, 135, 84, .07);
+    border: 1px solid rgba(25, 135, 84, .28);
+}
+
+.alcance-select-table-wrap {
+    max-height: min(430px, 48dvh);
+    overflow: auto;
+}
+
+#alcanceGenerateModal .modal-dialog-scrollable,
+#alcanceGenerateModal .modal-content {
+    max-height: calc(100dvh - 1rem);
+}
+
+#alcanceGenerateModal .modal-body {
+    min-height: 0;
+    overflow-y: auto;
+}
+
+@media (max-width: 767.98px) {
+    .alcance-actions {
+        width: 100%;
+    }
+
+    .alcance-actions .btn {
+        flex: 1 1 auto;
+    }
+}
+
+.theme-dark .alcance-card {
+    background: rgba(255, 255, 255, .02);
+}
+
+.theme-dark .alcance-receipt.pending-receipt {
+    background: rgba(255, 193, 7, .12);
+}
+
+.theme-dark .alcance-receipt.has-receipt {
+    background: rgba(25, 135, 84, .14);
+}

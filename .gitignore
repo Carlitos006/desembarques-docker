@@ -1,0 +1,18 @@
+/vendor/
+/.env
+/.env.local
+/.env.*.local
+/.DS_Store
+/node_modules/
+/backup/
+
+# Docker local uploads
+/storage/uploads/*
+!/storage/uploads/.gitkeep
+
+# Temporary historical-import working files
+/storage/aviso-imports/*
+!/storage/aviso-imports/.gitkeep
+
+# Local document used only for parser testing
+/6004438_pedimento.pdf

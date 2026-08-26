@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Extraer partidas (selector de SEC con memoria)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body{background:#ccc2b7;color:#000000}
+  .card{background:#a1bcfd;border:1px solid #1f2a44}
+  .form-control{background:#d8d7d7;color:#000000;border-color:#203054}
+  .table thead th{position:sticky;top:0;background:#101626}
+  .thead-orange th{ background:#c47400 !important; color:#fff !important; }
+  .sec-panel{max-height:48vh; overflow:auto; border:1px solid #1f2a44; border-radius:.5rem; padding:.5rem}
+  .sec-badge{background:#23304d;color:#b9c7ff}
+  .muted{color:#9fb3ff}
+</style>
+</head>
+<body class="p-3">
+<div class="container-fluid">
+  <h1 class="h4 mb-3">Extraer partidas desde la tabla (AJAX + selector de SEC)</h1>
+
+  <div class="row g-3">
+    <!-- Panel de carga y filtros -->
+    <div class="col-lg-3">
+      <div class="card p-3 mb-3">
+        <form id="pdfForm">
+          <label class="form-label">Archivo PDF</label>
+          <input id="pdfFile" type="file" name="pdf" accept="application/pdf" class="form-control mb-2" required>
+          <button id="btnExtract" class="btn btn-primary w-100" type="submit">Procesar PDF</button>
+        </form>
+        <div id="msg" class="mt-3"></div>
+      </div>
+
+      <div class="card p-3">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2 class="h6 m-0">SECs detectados <span class="badge sec-badge" id="secsCount">0</span></h2>
+          <span class="text-secondary small">elige cuáles mostrar</span>
+        </div>
+
+        <div class="input-group input-group-sm my-2">
+          <span class="input-group-text">Buscar</span>
+          <input id="secSearch" type="text" class="form-control" placeholder="Ej: SEC 1, 25, 120…">
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap mb-2">
+          <button id="btnAll" class="btn btn-outline-light btn-sm" type="button">Seleccionar todo</button>
+          <button id="btnNone" class="btn btn-outline-light btn-sm" type="button">Ninguno</button>
+          <button id="btnInvert" class="btn btn-outline-light btn-sm" type="button">Invertir</button>
+        </div>
+
+        <div id="secList" class="sec-panel small"></div>
+
+        <div id="selectedSummary" class="small mt-2 muted">
+          Seleccionados: 0
+        </div>
+
+        <div class="d-grid gap-2 mt-3">
+          <button id="btnApply" class="btn btn-success btn-sm" type="button">Aplicar filtro (cliente)</button>
+          <button id="btnApplyServer" class="btn btn-secondary btn-sm" type="button" title="Vuelve a pedir al servidor solo estas SEC (opcional)">Aplicar filtro (servidor)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de resultados -->
+    <div class="col-lg-9">
+      <div class="card p-3 mb-3" id="cabeceraBox">
+        <h2 class="h6 mb-3">Cabecera del pedimento</h2>
+        <div class="row g-2">
+          <div class="col-sm-6 col-lg-4">
+            <label class="form-label small" for="headerNum">Número de pedimento</label>
+            <input type="text" id="headerNum" class="form-control form-control-sm" placeholder="Ej. 18  48  3000  0001234">
+          </div>
+          <div class="col-sm-6 col-lg-4">
+            <label class="form-label small" for="headerCve">Cve. pedimento</label>
+            <input type="text" id="headerCve" class="form-control form-control-sm" placeholder="Ej. A1">
+          </div>
+          <div class="col-12 col-lg-4">
+            <label class="form-label small" for="headerRazon">Razón social</label>
+            <input type="text" id="headerRazon" class="form-control form-control-sm" placeholder="Razón social del importador">
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <label class="form-label small" for="headerEntrada">Fecha de entrada</label>
+            <input type="date" id="headerEntrada" class="form-control form-control-sm">
+          </div>
+          <div class="col-sm-6 col-lg-3">
+            <label class="form-label small" for="headerPago">Fecha de pago</label>
+            <input type="date" id="headerPago" class="form-control form-control-sm">
+          </div>
+        </div>
+        <div class="form-text mt-2">Completa los datos de cabecera que quieras enviar al formulario principal (opcional).</div>
+      </div>
+      <div class="card p-3">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <h2 class="h6 m-0">Partidas mostradas: <span class="badge bg-secondary" id="count">0</span></h2>
+          <button id="exportJson" class="btn btn-outline-light btn-sm" disabled>Exportar JSON</button>
+        </div>
+        <div class="table-responsive" style="max-height:70vh;">
+          <table class="table table-sm table-hover align-middle" id="partidasTable">
+            <thead class="thead-orange">
+              <tr>
+                <th>SEC</th>
+                <th>Descripción</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <details class="mt-2">
+          <summary>Diagnóstico</summary>
+          <pre id="debug" class="text-secondary small"></pre>
+        </details>
+        <div id="sendStatus" class="alert alert-info d-none mt-3" role="status"></div>
+        <div class="d-flex justify-content-end mt-3 gap-2">
+          <button type="button" class="btn btn-outline-secondary btn-sm" id="resetForm">Limpiar selección</button>
+          <button type="button" class="btn btn-success" id="sendToForm">Enviar al formulario principal</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="i18n.js?v=42"></script>
+<script>
+const TABLE_LANGUAGE = window.TableI18n ? window.TableI18n.language : 'es';
+/* ---------- Estado global ---------- */
+let ALL_ITEMS = [];      // partidas completas del servidor (sin filtrar)
+let UNIQUE_SECS = [];    // SECs únicas detectadas (ordenadas)
+let SELECTED_SECS = new Set(); // SECs seleccionadas que persisten entre filtros
+
+/* ---------- Referencias DOM ---------- */
+const form = document.getElementById('pdfForm');
+const msg = document.getElementById('msg');
+const tbody = document.querySelector('#partidasTable tbody');
+const countEl = document.getElementById('count');
+const debug = document.getElementById('debug');
+const btn = document.getElementById('btnExtract');
+const btnExport = document.getElementById('exportJson');
+const secListEl = document.getElementById('secList');
+const secsCountEl = document.getElementById('secsCount');
+const secSearch = document.getElementById('secSearch');
+const selectedSummary = document.getElementById('selectedSummary');
+const sendBtn = document.getElementById('sendToForm');
+const resetBtn = document.getElementById('resetForm');
+const sendStatus = document.getElementById('sendStatus');
+const headerInputs = {
+  num_pedimento: document.getElementById('headerNum'),
+  cve_pedimento: document.getElementById('headerCve'),
+  razon_social: document.getElementById('headerRazon'),
+  fecha_entrada: document.getElementById('headerEntrada'),
+  fecha_pago: document.getElementById('headerPago')
+};
+const cabeceraBox = document.getElementById('cabeceraBox');
+
+Object.values(headerInputs).forEach(input => {
+  if (!input) return;
+  input.addEventListener('input', ()=>{
+    if (input.dataset && input.dataset.rawValue) {
+      delete input.dataset.rawValue;
+      restoreDatePlaceholder(input);
+    }
+  });
+});
+
+/* ---------- Utilidades ---------- */
+const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s+/g,' ').trim();
+
+function extractExecutableLabel(value){
+  if (typeof value !== 'string') return '';
+  let candidate = value.trim();
+  if (!candidate) return '';
+
+  const quoted = candidate.match(/^(["'])(.+?)\1/);
+  if (quoted) {
+    candidate = quoted[2];
+  } else {
+    const spaceIndex = candidate.search(/\s/);
+    if (spaceIndex !== -1) candidate = candidate.slice(0, spaceIndex);
+  }
+
+  candidate = candidate.replace(/^['"]|['"]$/g, '');
+  const parts = candidate.split(/[\\\/]/).filter(Boolean);
+  if (parts.length) candidate = parts[parts.length - 1];
+
+  return candidate.trim();
+}
+
+function resolveDriverDetailLabel(details){
+  if (!details || typeof details !== 'object') return '';
+
+  if (typeof details.display === 'string' && details.display.trim() !== '') {
+    return details.display.trim();
+  }
+
+  const sources = [];
+  if (typeof details.command === 'string' && details.command.trim() !== '') {
+    sources.push(details.command);
+  }
+  if (typeof details.binary === 'string' && details.binary.trim() !== '') {
+    sources.push(details.binary);
+  }
+
+  for (const source of sources) {
+    const label = extractExecutableLabel(source);
+    if (label) return label;
+  }
+
+  return '';
+}
+
+function formatTextDriverLabel(driver, details){
+  if (!driver) return '';
+  const raw = String(driver).trim();
+  if (!raw) return '';
+  let label = raw.toLowerCase() === 'smalot' ? 'smalot/pdfparser' : raw;
+  const detailLabel = resolveDriverDetailLabel(details);
+  if (detailLabel) {
+    label += ` (${detailLabel})`;
+  }
+  return label;
+}
+
+function extractDriverDetails(payload){
+  if (!payload || typeof payload !== 'object') return { driver: null, details: {} };
+  const driver = typeof payload.text_driver === 'string' && payload.text_driver.trim() !== ''
+    ? payload.text_driver.trim()
+    : (payload.debug && typeof payload.debug.text_driver === 'string' ? payload.debug.text_driver.trim() : '');
+  const detailsSource = payload.text_driver_details && typeof payload.text_driver_details === 'object'
+    ? payload.text_driver_details
+    : (payload.debug && typeof payload.debug.text_driver_details === 'object' ? payload.debug.text_driver_details : {});
+  const details = detailsSource && typeof detailsSource === 'object' ? detailsSource : {};
+  return { driver: driver || null, details };
+}
+
+function updateDriverNotice(payload){
+  if (!msg) return;
+  const info = extractDriverDetails(payload);
+  const label = formatTextDriverLabel(info.driver, info.details);
+  msg.innerHTML = '';
+  if (!label) return;
+  const alert = document.createElement('div');
+  alert.className = 'alert alert-info mb-0';
+  alert.textContent = `Motor de texto: ${label}`;
+  msg.appendChild(alert);
+}
+
+function updateSelectedSummary(){
+  const arr = Array.from(SELECTED_SECS).sort((a,b)=>a-b);
+  const sample = arr.slice(0,8).join(', ');
+  const suffix = arr.length > 8 ? `, …` : '';
+  selectedSummary.textContent = arr.length
+    ? `Seleccionados: ${arr.length} — ej: ${sample}${suffix}`
+    : `Seleccionados: 0`;
+}
+
+function escapeHtml(value){
+  if (value === null || value === undefined) return '';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function buildSecList(secs){
+  secListEl.innerHTML = secs.map(sec => {
+    const isChecked = SELECTED_SECS.has(sec);
+
+    // Buscar la descripción asociada a este SEC en ALL_ITEMS
+    const item = ALL_ITEMS.find(it => parseInt(it.sec,10) === sec);
+    let desc = item && item.descripcion ? item.descripcion : '';
+    if (desc.length > 60) desc = desc.substring(0, 60) + '…'; // recortar si es muy larga
+    const descEscaped = escapeHtml(desc);
+
+    return `
+      <label class="d-flex align-items-center gap-2 mb-1">
+        <input type="checkbox" class="form-check-input sec-check" value="${sec}" ${isChecked ? 'checked' : ''}>
+        <span>SEC ${sec}${desc ? ' - ' + descEscaped : ''}</span>
+      </label>
+    `;
+  }).join('');
+  secsCountEl.textContent = secs.length;
+
+  // engancha eventos que actualizan el estado global
+  document.querySelectorAll('.sec-check').forEach(ch=>{
+    ch.addEventListener('change', ()=>{
+      const val = parseInt(ch.value,10);
+      if (ch.checked) SELECTED_SECS.add(val);
+      else SELECTED_SECS.delete(val);
+      updateSelectedSummary();
+    });
+  });
+  updateSelectedSummary();
+}
+
+
+function normalizeDateForInput(value){
+  if (typeof value !== 'string') return '';
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+  const match = trimmed.match(/^(\d{1,4})[\/\.\-](\d{1,2})[\/\.\-](\d{1,4})$/);
+  if (!match) return '';
+  let [ , a, b, c ] = match;
+  const pad = (n) => n.toString().padStart(2,'0');
+
+  const normalizeYear = (part) => {
+    if (!part) return '';
+    if (part.length === 4) return part;
+    if (part.length === 2) {
+      const num = parseInt(part, 10);
+      if (Number.isNaN(num)) return '';
+      return (num >= 70 ? '19' : '20') + pad(num);
+    }
+    if (part.length === 3) {
+      return ('0' + part).slice(-4);
+    }
+    return part;
+  };
+
+  let year;
+  let month;
+  let day;
+
+  if (a.length === 4) {
+    year = normalizeYear(a);
+    month = pad(parseInt(b, 10));
+    day = pad(parseInt(c, 10));
+  } else if (c.length === 4 || c.length === 2 || c.length === 3) {
+    year = normalizeYear(c);
+    month = pad(parseInt(b, 10));
+    day = pad(parseInt(a, 10));
+  } else {
+    return '';
+  }
+
+  if (!year || Number.isNaN(parseInt(month, 10)) || Number.isNaN(parseInt(day, 10))) return '';
+  const monthNum = parseInt(month, 10);
+  const dayNum = parseInt(day, 10);
+  if (monthNum < 1 || monthNum > 12 || dayNum < 1 || dayNum > 31) return '';
+
+  return `${year}-${pad(monthNum)}-${pad(dayNum)}`;
+}
+
+function restoreDatePlaceholder(input){
+  if (!input) return;
+  const original = input.getAttribute('data-original-placeholder');
+  if (original !== null) {
+    input.placeholder = original;
+  }
+  if (input.dataset && Object.prototype.hasOwnProperty.call(input.dataset, 'rawValue')) {
+    delete input.dataset.rawValue;
+  }
+}
+
+function cacheOriginalPlaceholder(input){
+  if (!input) return;
+  if (!input.getAttribute('data-original-placeholder')) {
+    input.setAttribute('data-original-placeholder', input.placeholder || '');
+  }
+}
+
+function renderHeader(header){
+  const data = header && typeof header === 'object' ? header : {};
+  let hasAny = false;
+
+  Object.entries(headerInputs).forEach(([key, input])=>{
+    if (!input) return;
+    const raw = data[key];
+    const value = raw === undefined || raw === null ? '' : String(raw).trim();
+
+    if (key === 'fecha_entrada' || key === 'fecha_pago') {
+      cacheOriginalPlaceholder(input);
+      const normalized = normalizeDateForInput(value);
+      if (normalized) {
+        input.value = normalized;
+        restoreDatePlaceholder(input);
+      } else {
+        input.value = '';
+        if (value) {
+          input.dataset.rawValue = value;
+          input.placeholder = value;
+        } else {
+          restoreDatePlaceholder(input);
+        }
+      }
+    } else {
+      input.value = value;
+    }
+
+    if (value) hasAny = true;
+  });
+
+  if (cabeceraBox) {
+    cabeceraBox.classList.remove('d-none');
+    cabeceraBox.dataset.hasHeader = hasAny ? '1' : '0';
+  }
+}
+
+function renderTable(items){
+  const makeCell = (val) => {
+    const v = escapeHtml(val ?? '');
+    return `<input class="form-control form-control-sm" value="${v}">`;
+  };
+  const toRow = (it) => {
+    return `<tr>
+      <td>${makeCell(it.sec)}</td>
+      <td>${makeCell(it.descripcion)}</td>
+    </tr>`;
+  };
+  tbody.innerHTML = items.map(toRow).join('');
+  countEl.textContent = items.length;
+  btnExport.disabled = items.length === 0;
+}
+
+function filterItemsBySecs(items, secs){
+  const set = new Set(secs.map(Number));
+  return items.filter(it => it.sec !== null && set.has(parseInt(it.sec,10)));
+}
+
+/* ---------- Eventos ---------- */
+const PARSE_ENDPOINT = (() => {
+  const { origin, pathname } = window.location;
+  if (pathname.endsWith('/')) {
+    return origin + pathname + 'parse2.php?lang=' + encodeURIComponent(TABLE_LANGUAGE);
+  }
+  if (pathname.toLowerCase().endsWith('.html')) {
+    return origin + pathname.replace(/[^\/]*$/, '') + 'parse2.php?lang=' + encodeURIComponent(TABLE_LANGUAGE);
+  }
+  return origin + pathname.replace(/\/?$/, '/') + 'parse2.php?lang=' + encodeURIComponent(TABLE_LANGUAGE);
+})();
+
+// Cargar PDF
+form.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  msg.innerHTML = '';
+  tbody.innerHTML = '';
+  countEl.textContent = '0';
+  btnExport.disabled = true;
+  secListEl.innerHTML = '';
+  secsCountEl.textContent = '0';
+  UNIQUE_SECS = [];
+  ALL_ITEMS = [];
+  SELECTED_SECS.clear();
+  updateSelectedSummary();
+
+  const file = document.getElementById('pdfFile').files[0];
+  if(!file){ msg.innerHTML = '<div class="alert alert-warning">Selecciona un PDF.</div>'; return; }
+
+  const fd = new FormData(); fd.append('pdf', file);
+
+  btn.disabled = true; btn.textContent = 'Procesando...';
+  try{
+    const res = await fetch(PARSE_ENDPOINT, { method:'POST', body: fd, headers:{'Accept':'application/json'} });
+    const text = await res.text();
+    let json;
+    try { json = JSON.parse(text); }
+    catch { msg.innerHTML = '<div class="alert alert-danger">Error: Servidor no devolvió JSON.</div>'; debug.textContent=text; return; }
+
+    if(!json.ok){
+      msg.innerHTML = `<div class="alert alert-danger"><b>Error:</b> ${json.error || 'Fallo inesperado'}</div>`;
+      debug.textContent = JSON.stringify(json, null, 2);
+      return;
+    }
+
+    ALL_ITEMS = json.items || [];
+    renderHeader(json.header || {});
+    UNIQUE_SECS = Array.from(new Set(
+      ALL_ITEMS.map(it => parseInt(it.sec,10)).filter(n => !Number.isNaN(n))
+    )).sort((a,b)=>a-b);
+
+    // Por defecto, selecciona TODO
+    SELECTED_SECS = new Set(UNIQUE_SECS);
+
+    // Render inicial
+    buildSecList(UNIQUE_SECS);
+    renderTable(ALL_ITEMS);
+    updateDriverNotice(json);
+    debug.textContent = JSON.stringify(json.debug || {}, null, 2);
+
+  } catch(err){
+    msg.innerHTML = `<div class="alert alert-danger">Error de red/JS: ${err}</div>`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Procesar PDF';
+  }
+});
+
+// Buscar SECs (reconstruye lista sin perder selección)
+secSearch.addEventListener('input', ()=>{
+  const q = norm(secSearch.value);
+  const filtered = q === ''
+    ? UNIQUE_SECS
+    : UNIQUE_SECS.filter(n => {
+        const item = ALL_ITEMS.find(it => parseInt(it.sec,10) === n);
+        const desc = item?.descripcion || '';
+        return norm(`sec ${n}`).includes(q) || norm(String(n)).includes(q) || norm(desc).includes(q);
+      });
+  buildSecList(filtered);
+});
+
+
+// Selección masiva
+document.getElementById('btnAll').addEventListener('click', ()=>{
+  SELECTED_SECS = new Set(UNIQUE_SECS);
+  buildSecList(UNIQUE_SECS);
+});
+document.getElementById('btnNone').addEventListener('click', ()=>{
+  SELECTED_SECS.clear();
+  buildSecList(UNIQUE_SECS);
+});
+document.getElementById('btnInvert').addEventListener('click', ()=>{
+  const next = new Set();
+  UNIQUE_SECS.forEach(sec => { if (!SELECTED_SECS.has(sec)) next.add(sec); });
+  SELECTED_SECS = next;
+  buildSecList(UNIQUE_SECS);
+});
+
+// Aplicar filtro (cliente)
+document.getElementById('btnApply').addEventListener('click', ()=>{
+  const secs = Array.from(SELECTED_SECS);
+  const filtered = secs.length ? filterItemsBySecs(ALL_ITEMS, secs) : [];
+  renderTable(filtered);
+});
+
+// Aplicar filtro (servidor) — opcional
+document.getElementById('btnApplyServer').addEventListener('click', async ()=>{
+  const secs = Array.from(SELECTED_SECS);
+  const file = document.getElementById('pdfFile').files[0];
+  if (!file) return;
+  msg.innerHTML = '';
+  const fd = new FormData();
+  fd.append('pdf', file);
+  if (secs.length) fd.append('sec_filter', secs.join(','));
+
+  btn.disabled = true; btn.textContent = 'Filtrando...';
+  try{
+    const res = await fetch('parse2.php?lang=' + encodeURIComponent(TABLE_LANGUAGE), { method:'POST', body: fd });
+    const text = await res.text();
+    let json;
+    try { json = JSON.parse(text); }
+    catch { msg.innerHTML = '<div class="alert alert-danger">Servidor no devolvió JSON.</div>'; debug.textContent=text; return; }
+
+    if(!json.ok){
+      msg.innerHTML = `<div class="alert alert-danger"><b>Error:</b> ${json.error || 'Fallo inesperado'}</div>`;
+      debug.textContent = JSON.stringify(json, null, 2);
+      return;
+    }
+
+    renderTable(json.items || []);
+    if (json.header) renderHeader(json.header);
+    updateDriverNotice(json);
+    debug.textContent = JSON.stringify(json.debug || {}, null, 2);
+
+  } catch(err){
+    msg.innerHTML = `<div class="alert alert-danger">Error de red/JS: ${err}</div>`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Procesar PDF';
+  }
+});
+
+// Exportar JSON de lo visible
+document.getElementById('exportJson').addEventListener('click', ()=>{
+  const rows = Array.from(document.querySelectorAll('#partidasTable tbody tr'));
+  const out = rows.map(r=>{
+    const tds = r.querySelectorAll('td input');
+    return {
+      sec: tds[0].value,
+      descripcion: tds[1].value
+    };
+  });
+  const blob = new Blob([JSON.stringify(out, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = 'partidas_filtradas.json'; a.click();
+  URL.revokeObjectURL(url);
+});
+
+function readHeaderPayload(){
+  const header = {};
+  Object.entries(headerInputs).forEach(([key, input])=>{
+    if (!input) return;
+    let val = (input.value || '').trim();
+    if (val === '' && input.dataset && input.dataset.rawValue) {
+      val = input.dataset.rawValue.trim();
+    }
+    if (val !== '') header[key] = val;
+  });
+  return header;
+}
+
+function collectTableItems(){
+  const rows = Array.from(document.querySelectorAll('#partidasTable tbody tr'));
+  return rows.map(row => {
+    const inputs = row.querySelectorAll('td input');
+    if (!inputs.length) return null;
+    const getVal = (idx) => (inputs[idx] ? inputs[idx].value : '').trim();
+    const item = {
+      sec: getVal(0),
+      descripcion: getVal(1)
+    };
+    if (!item.sec && !item.descripcion) {
+      return null;
+    }
+    return item;
+  }).filter(Boolean);
+}
+
+function formatPedimentoLabel(sec, descripcion){
+  const cleanSec = String(sec || '').trim();
+  if (!cleanSec) return '';
+  const desc = String(descripcion || '').trim();
+  return desc ? `SEC ${cleanSec} — ${desc}` : `SEC ${cleanSec}`;
+}
+
+function buildPedimentosList(items){
+  const unique = new Map();
+  items.forEach(item => {
+    const label = formatPedimentoLabel(item.sec, item.descripcion);
+    if (!label) return;
+    const key = String(item.sec || '').trim();
+    if (!unique.has(key)) unique.set(key, label);
+  });
+  return Array.from(unique.values());
+}
+
+function showSendStatus(message, type){
+  if (!sendStatus) return;
+  sendStatus.classList.remove('d-none','alert-info','alert-success','alert-danger','alert-warning');
+  if (!message){
+    sendStatus.classList.add('d-none');
+    sendStatus.textContent = '';
+    return;
+  }
+  const cls = type === 'success' ? 'alert-success' : type === 'danger' ? 'alert-danger' : type === 'warning' ? 'alert-warning' : 'alert-info';
+  sendStatus.classList.add(cls);
+  sendStatus.textContent = message;
+}
+
+function sendPayloadToParent(){
+  showSendStatus('', null);
+  const items = collectTableItems();
+  const pedimentos = buildPedimentosList(items);
+  const header = readHeaderPayload();
+  const payload = { header, items, pedimentos };
+
+  const hasOpener = window.opener && !window.opener.closed;
+  if (!hasOpener){
+    showSendStatus('No se detectó una ventana principal abierta. Regresa manualmente para pegar los datos.', 'warning');
+    try {
+      window.localStorage.setItem('pedimentosBridgeDraft', JSON.stringify(payload));
+    } catch (err) {
+      // ignora errores de almacenamiento
+    }
+    return;
+  }
+
+  const origin = window.location.origin && window.location.origin !== 'null' ? window.location.origin : '*';
+  try {
+    window.opener.postMessage({ type: 'pedimentos-extractor', payload }, origin);
+    showSendStatus('Datos enviados. Regresa al formulario principal para confirmar la información.', 'success');
+    window.focus();
+  } catch (err) {
+    showSendStatus(`No se pudieron enviar los datos: ${err}`, 'danger');
+  }
+}
+
+if (sendBtn){
+  sendBtn.addEventListener('click', sendPayloadToParent);
+}
+
+if (resetBtn){
+  resetBtn.addEventListener('click', ()=>{
+    renderHeader({});
+    SELECTED_SECS = new Set(UNIQUE_SECS);
+    buildSecList(UNIQUE_SECS);
+    renderTable(ALL_ITEMS);
+    updateSelectedSummary();
+    showSendStatus('Se restablecieron los datos mostrados.', 'info');
+  });
+}
+</script>
+</body>
+</html>
